@@ -1,8 +1,8 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from '@tanstack/react-router'
 
-export const Route = createLazyFileRoute("/dashboard/")({
+export const Route = createLazyFileRoute('/(dashboard)/')({
   component: RouteComponent,
-});
+})
 
 export default function RouteComponent() {
   return (
@@ -14,5 +14,5 @@ export default function RouteComponent() {
       </div>
       <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
     </div>
-  );
+  )
 }
