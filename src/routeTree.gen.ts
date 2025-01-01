@@ -19,6 +19,7 @@ import { Route as rootRoute } from './routes/__root'
 const ClientsIndexLazyImport = createFileRoute('/clients/')()
 const dashboardIndexLazyImport = createFileRoute('/(dashboard)/')()
 const ClientsNewLazyImport = createFileRoute('/clients/new')()
+const authLoginLazyImport = createFileRoute('/(auth)/login')()
 
 // Create/Update Routes
 
@@ -42,10 +43,25 @@ const ClientsNewLazyRoute = ClientsNewLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/clients/new.lazy').then((d) => d.Route))
 
+const authLoginLazyRoute = authLoginLazyImport
+  .update({
+    id: '/(auth)/login',
+    path: '/login',
+    getParentRoute: () => rootRoute,
+  } as any)
+  .lazy(() => import('./routes/(auth)/login.lazy').then((d) => d.Route))
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/(auth)/login': {
+      id: '/(auth)/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof authLoginLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/clients/new': {
       id: '/clients/new'
       path: '/clients/new'
@@ -73,12 +89,14 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
+  '/login': typeof authLoginLazyRoute
   '/clients/new': typeof ClientsNewLazyRoute
   '/': typeof dashboardIndexLazyRoute
   '/clients': typeof ClientsIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
+  '/login': typeof authLoginLazyRoute
   '/clients/new': typeof ClientsNewLazyRoute
   '/': typeof dashboardIndexLazyRoute
   '/clients': typeof ClientsIndexLazyRoute
@@ -86,6 +104,7 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/(auth)/login': typeof authLoginLazyRoute
   '/clients/new': typeof ClientsNewLazyRoute
   '/(dashboard)/': typeof dashboardIndexLazyRoute
   '/clients/': typeof ClientsIndexLazyRoute
@@ -93,20 +112,27 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/clients/new' | '/' | '/clients'
+  fullPaths: '/login' | '/clients/new' | '/' | '/clients'
   fileRoutesByTo: FileRoutesByTo
-  to: '/clients/new' | '/' | '/clients'
-  id: '__root__' | '/clients/new' | '/(dashboard)/' | '/clients/'
+  to: '/login' | '/clients/new' | '/' | '/clients'
+  id:
+    | '__root__'
+    | '/(auth)/login'
+    | '/clients/new'
+    | '/(dashboard)/'
+    | '/clients/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
+  authLoginLazyRoute: typeof authLoginLazyRoute
   ClientsNewLazyRoute: typeof ClientsNewLazyRoute
   dashboardIndexLazyRoute: typeof dashboardIndexLazyRoute
   ClientsIndexLazyRoute: typeof ClientsIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  authLoginLazyRoute: authLoginLazyRoute,
   ClientsNewLazyRoute: ClientsNewLazyRoute,
   dashboardIndexLazyRoute: dashboardIndexLazyRoute,
   ClientsIndexLazyRoute: ClientsIndexLazyRoute,
@@ -122,10 +148,14 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/(auth)/login",
         "/clients/new",
         "/(dashboard)/",
         "/clients/"
       ]
+    },
+    "/(auth)/login": {
+      "filePath": "(auth)/login.lazy.tsx"
     },
     "/clients/new": {
       "filePath": "clients/new.lazy.tsx"
