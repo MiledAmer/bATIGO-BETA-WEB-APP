@@ -1,6 +1,6 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { AppSidebar } from "./-components/app-sidebar"
+import { AppSidebar } from "./-components/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,13 +8,13 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 export const Route = createRootRoute({
   component: () => (
@@ -39,7 +39,9 @@ export const Route = createRootRoute({
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          <Outlet />
+          <div className="flex flex-1 flex-col gap-4 p-4">
+            <Outlet />
+          </div>
         </SidebarInset>
       </SidebarProvider>
       <TanStackRouterDevtools />

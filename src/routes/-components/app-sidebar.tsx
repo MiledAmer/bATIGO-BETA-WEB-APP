@@ -15,7 +15,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Calendar, Home, ReceiptEuro, ReceiptText, Settings } from "lucide-react";
+import { Calendar, Home, ReceiptEuro, ReceiptText, Settings, Users } from "lucide-react";
 import { NavUser } from "./nav-user";
 
 // This is sample data.
@@ -32,9 +32,14 @@ const data = {
       url: "#",
       items: [
         {
-          title: "accueil",
+          title: "Accueil",
           url: "/",
           icon: Home,
+        },
+        {
+          title: "Clients",
+          url: "/clients",
+          icon: Users,
         },
         {
           title: "Devis",
@@ -72,7 +77,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SearchForm />
       </SidebarHeader>
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
             <SidebarGroupLabel>{item.title}</SidebarGroupLabel>

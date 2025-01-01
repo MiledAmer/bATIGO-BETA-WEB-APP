@@ -53,7 +53,7 @@ const cardsData = [
 
 export default function RouteComponent() {
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4">
+    <>
       <div className="grid auto-rows-min gap-4 md:grid-cols-4">
         {cardsData.map((card) => (
           <Card key={card.title}>
@@ -84,6 +84,6 @@ export default function RouteComponent() {
           <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
         </BarChart>
       </ChartContainer>
-    </div>
+    </>
   );
 }
