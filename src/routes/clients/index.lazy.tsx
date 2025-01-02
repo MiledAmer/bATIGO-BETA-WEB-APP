@@ -30,43 +30,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { columns } from "./-components/Cols";
+import { useEffect, useState } from "react";
+import { fetchClients } from "@/api/clientAPI"; 
 
 export const Route = createLazyFileRoute("/clients/")({
   component: RouteComponent,
 });
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-];
+
 
 export type Payment = {
   id: string;
@@ -84,25 +55,23 @@ export function RouteComponent() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  });
-
+  const [clients, setClients] = useState<any[]>([]); 
+  const [error, setError] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1); 
+  const per_page = 10;
+  useEffect(() => {
+    const getClients = async () => {
+    
+        try {
+          const data = await fetchClients(currentPage, per_page,search);
+          setClients(data); 
+        } catch (err: any) {
+          setError(err.message);  
+      } 
+    };
+    getClients(); 
+  }, [currentPage,search]);
   return (
     <div className="w-full">
       <div className="flex flex-row items-center justify-between">
@@ -120,9 +89,9 @@ export function RouteComponent() {
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          value={search}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            setSearch(event.target.value)
           }
           className="max-w-sm"
         />
@@ -132,7 +101,7 @@ export function RouteComponent() {
               Columns <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          {/* <DropdownMenuContent align="end">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
@@ -150,13 +119,13 @@ export function RouteComponent() {
                   </DropdownMenuCheckboxItem>
                 );
               })}
-          </DropdownMenuContent>
+          </DropdownMenuContent> */}
         </DropdownMenu>
       </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {/* {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -171,57 +140,45 @@ export function RouteComponent() {
                   );
                 })}
               </TableRow>
-            ))}
+            ))} */}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+  {clients.data ? (
+    clients.data.map((row) => (
+      <TableRow key={row.id}>
+        <TableCell>{row.nom}</TableCell>
+        <TableCell>{row.email}</TableCell>
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={5}>Aucun client trouvé</TableCell>
+    </TableRow>
+  )}
+</TableBody>
+
+ 
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {clients.current_page*clients.per_page} of{" "}
+          {clients.total} row(s) selected.
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
           >
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={clients.length === 0}
           >
             Next
           </Button>

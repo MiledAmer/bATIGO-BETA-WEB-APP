@@ -16,12 +16,19 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
+const DevisIndexLazyImport = createFileRoute('/devis/')()
 const ClientsIndexLazyImport = createFileRoute('/clients/')()
 const dashboardIndexLazyImport = createFileRoute('/(dashboard)/')()
 const ClientsNewLazyImport = createFileRoute('/clients/new')()
 const authLoginLazyImport = createFileRoute('/(auth)/login')()
 
 // Create/Update Routes
+
+const DevisIndexLazyRoute = DevisIndexLazyImport.update({
+  id: '/devis/',
+  path: '/devis/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/devis/index.lazy').then((d) => d.Route))
 
 const ClientsIndexLazyRoute = ClientsIndexLazyImport.update({
   id: '/clients/',
@@ -83,6 +90,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientsIndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/devis/': {
+      id: '/devis/'
+      path: '/devis'
+      fullPath: '/devis'
+      preLoaderRoute: typeof DevisIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -93,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/clients/new': typeof ClientsNewLazyRoute
   '/': typeof dashboardIndexLazyRoute
   '/clients': typeof ClientsIndexLazyRoute
+  '/devis': typeof DevisIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -100,6 +115,7 @@ export interface FileRoutesByTo {
   '/clients/new': typeof ClientsNewLazyRoute
   '/': typeof dashboardIndexLazyRoute
   '/clients': typeof ClientsIndexLazyRoute
+  '/devis': typeof DevisIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -108,19 +124,21 @@ export interface FileRoutesById {
   '/clients/new': typeof ClientsNewLazyRoute
   '/(dashboard)/': typeof dashboardIndexLazyRoute
   '/clients/': typeof ClientsIndexLazyRoute
+  '/devis/': typeof DevisIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/login' | '/clients/new' | '/' | '/clients'
+  fullPaths: '/login' | '/clients/new' | '/' | '/clients' | '/devis'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/clients/new' | '/' | '/clients'
+  to: '/login' | '/clients/new' | '/' | '/clients' | '/devis'
   id:
     | '__root__'
     | '/(auth)/login'
     | '/clients/new'
     | '/(dashboard)/'
     | '/clients/'
+    | '/devis/'
   fileRoutesById: FileRoutesById
 }
 
@@ -129,6 +147,7 @@ export interface RootRouteChildren {
   ClientsNewLazyRoute: typeof ClientsNewLazyRoute
   dashboardIndexLazyRoute: typeof dashboardIndexLazyRoute
   ClientsIndexLazyRoute: typeof ClientsIndexLazyRoute
+  DevisIndexLazyRoute: typeof DevisIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -136,6 +155,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClientsNewLazyRoute: ClientsNewLazyRoute,
   dashboardIndexLazyRoute: dashboardIndexLazyRoute,
   ClientsIndexLazyRoute: ClientsIndexLazyRoute,
+  DevisIndexLazyRoute: DevisIndexLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -151,7 +171,8 @@ export const routeTree = rootRoute
         "/(auth)/login",
         "/clients/new",
         "/(dashboard)/",
-        "/clients/"
+        "/clients/",
+        "/devis/"
       ]
     },
     "/(auth)/login": {
@@ -165,6 +186,9 @@ export const routeTree = rootRoute
     },
     "/clients/": {
       "filePath": "clients/index.lazy.tsx"
+    },
+    "/devis/": {
+      "filePath": "devis/index.lazy.tsx"
     }
   }
 }
