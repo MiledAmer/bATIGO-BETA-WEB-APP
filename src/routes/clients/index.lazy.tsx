@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, ReactNode } from "@tanstack/react-router";
 import * as React from "react";
 import {
   ColumnFiltersState,
@@ -32,46 +32,38 @@ import {
 import { columns } from "./-components/Cols";
 import { useEffect, useState } from "react";
 import { fetchClients } from "@/api/clientAPI"; 
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createLazyFileRoute("/clients/")({
   component: RouteComponent,
 });
 
 
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
 export function RouteComponent() {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  const [search, setSearch] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const per_page = 10;
+
+
+  const { data: clients, error, isLoading } = useQuery({
+    queryKey: ['clients', currentPage, search], 
+    queryFn: () => fetchClients(currentPage, per_page, search), 
+    // keepPreviousData: true,
+  });
+
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Nom',
+        accessor: 'nom',
+      },
+      {
+        Header: 'Email',
+        accessor: 'email',
+      },
+    ],
     []
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
-  const [clients, setClients] = useState<any[]>([]); 
-  const [error, setError] = useState<string>("");
-  const [search, setSearch] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1); 
-  const per_page = 10;
-  useEffect(() => {
-    const getClients = async () => {
-    
-        try {
-          const data = await fetchClients(currentPage, per_page,search);
-          setClients(data); 
-        } catch (err: any) {
-          setError(err.message);  
-      } 
-    };
-    getClients(); 
-  }, [currentPage,search]);
   return (
     <div className="w-full">
       <div className="flex flex-row items-center justify-between">
@@ -86,13 +78,12 @@ export function RouteComponent() {
           </Button>
         </a>
       </div>
+
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter emails..."
           value={search}
-          onChange={(event) =>
-            setSearch(event.target.value)
-          }
+          onChange={(event) => setSearch(event.target.value)}
           className="max-w-sm"
         />
         <DropdownMenu>
@@ -101,69 +92,45 @@ export function RouteComponent() {
               Columns <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
-          {/* <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent> */}
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {/* {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))} */}
-          </TableHeader>
-          <TableBody>
-  {clients.data ? (
-    clients.data.map((row) => (
-      <TableRow key={row.id}>
-        <TableCell>{row.nom}</TableCell>
-        <TableCell>{row.email}</TableCell>
-      </TableRow>
-    ))
-  ) : (
-    <TableRow>
-      <TableCell colSpan={5}>Aucun client trouvé</TableCell>
-    </TableRow>
-  )}
-</TableBody>
 
- 
-        </Table>
+      <div className="rounded-md border">
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : error ? (
+          <div>Error: {error.message}</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              {columns.map((column) => (
+                <TableCell key={column.Header}>{column.Header}</TableCell>
+              ))}
+            </TableHeader>
+
+            <TableBody>
+              {clients?.data?.length ? (
+                clients.data.map((row: {
+                  [x: string]: ReactNode; id: React.Key | null 
+}) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{row.nom}</TableCell>
+                    <TableCell>{row.email}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={2}>Aucun client trouvé</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
       </div>
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {clients.current_page*clients.per_page} of{" "}
-          {clients.total} row(s) selected.
+          {clients?.current_page * clients?.per_page} of {clients?.total} row(s) selected.
         </div>
         <div className="space-x-2">
           <Button
@@ -178,7 +145,7 @@ export function RouteComponent() {
             variant="outline"
             size="sm"
             onClick={() => setCurrentPage((prev) => prev + 1)}
-            disabled={clients.length === 0}
+            disabled={clients?.data?.length === 0}
           >
             Next
           </Button>
@@ -187,3 +154,4 @@ export function RouteComponent() {
     </div>
   );
 }
+

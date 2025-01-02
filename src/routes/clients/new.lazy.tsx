@@ -1,5 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useState,useEffect } from "react";
+import { useState,useEffect, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,10 +17,13 @@ import { addClient } from  "@/api/clientAPI";
 import { fetchPays } from "@/api/paysAPI"; 
 import {
   handlePhoneNumberChange,
+  handlePhoneNumberChangeE,
   handleCountryChange,
   handleCountryChangeE,
   handleChange
 } from "./-components/FormDataClientHandler";
+import { useQuery } from "@tanstack/react-query";
+
 export const Route = createLazyFileRoute("/clients/new")({
   component: RouteComponent,
 });
@@ -65,15 +68,12 @@ export default function RouteComponent() {
      company_phone_iso_code:null,
      company_phone_number:null
   });
-  const [pays, setPays] = useState<string[]>([]);
-    useEffect(() => {
-      const getPays = async () => {
-            const data = await fetchPays();
-            console.log('data',data)
-            setPays(data); 
-      };
-      getPays(); 
-    }, []);
+ 
+    const { data: countries } = useQuery({
+      queryKey: ['countries'],
+      queryFn: fetchPays, 
+    });
+  
     const [selectedCountry, setSelectedCountry] = useState({
     });
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -92,7 +92,12 @@ export default function RouteComponent() {
       console.error("Error creating client:", error);
     }
   };
-
+  useEffect(() => {
+    setFormData((prevFormData: any) => ({
+      ...prevFormData,
+      type: clientType 
+    }));
+  }, [clientType]);
   return (
     <div className="container mx-auto py-10">
       <div className="flex flex-row items-center justify-between">
@@ -104,26 +109,26 @@ export default function RouteComponent() {
         <CardContent>
           <form onSubmit={handleSubmit}  className="space-y-8">
             {/* Type de client */}
-            <div className="space-y-4">
-              <Label>Type de client</Label>
-              <RadioGroup
-                defaultValue="type.particulier"
-                onValueChange={(value) =>
-                  setClientType(value as "type.particulier" | "type.professionnel")
-                }
-                className="flex flex-col space-y-1"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="type.particulier" id="type.particulier" />
-                  <Label htmlFor="type.particulier">Particulier</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="professionnel" id="professionnel" />
-                  <Label htmlFor="professionnel">Professionnel</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
+           
+ <div className="space-y-4">
+      <Label>Type de client</Label>
+      <RadioGroup
+        value={clientType}
+        onValueChange={(value) =>
+          setClientType(value as "type.particulier" | "type.professionnel")
+        }
+        className="flex flex-col space-y-1"
+      >
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="type.particulier" id="type.particulier" />
+          <Label htmlFor="type.particulier">Particulier</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="type.professionnel" id="type.professionnel" />
+          <Label htmlFor="type.professionnel">Professionnel</Label>
+        </div>
+      </RadioGroup>
+    </div>
             <Separator />
 
             {clientType === "type.particulier" ? (
@@ -164,17 +169,16 @@ export default function RouteComponent() {
   id="country"
   name="country"
   value={selectedCountry?.alpha2Code || ""}
-  onChange={(e) => handleCountryChange(e, pays, setSelectedCountry, setFormData, formData)}
+  onChange={(e) => handleCountryChange(e, countries, setSelectedCountry, setFormData, formData)}
   className="border border-gray-300 rounded p-2"
 >
-  {pays.map((country, index) => (
-    <option
-      key={index}
-      value={country.alpha2Code || ""}
-    >
-      {country.name} ({country.callingCodes?.[0] || "N/A"})
-    </option>
-  ))}
+{Array.isArray(countries) &&
+            countries.map((pay: any) => (
+              <option key={pay.alpha2Code} value={pay.alpha2Code}>
+                {pay.name || pay.nom} ({pay.callingCodes?.[0] || "N/A"}) 
+              </option>
+            ))}
+
 </select>
 
         <input
@@ -236,7 +240,8 @@ export default function RouteComponent() {
       <SelectValue placeholder="Sélectionner un pays" />
     </SelectTrigger>
     <SelectContent>
-      {pays.map((pay) => (
+    {Array.isArray(countries) &&
+            countries.map((pay: any) => (
         <SelectItem key={pay.alpha2Code} value={pay.alpha2Code}>
           {pay.nom || pay.name}
         </SelectItem>
@@ -254,16 +259,25 @@ export default function RouteComponent() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="zone">Zone</Label>
-                      <Select>
-                        <SelectTrigger id="zone">
-                          <SelectValue placeholder="Sélectionner une zone" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="zone1">Zone 1</SelectItem>
-                          <SelectItem value="zone2">Zone 2</SelectItem>
-                          <SelectItem value="zone3">Zone 3</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Select
+  name="zone"
+  onValueChange={(value) =>
+    setFormData({
+      ...formData,
+      zone: value, 
+    })
+  }
+>
+  <SelectTrigger id="zone">
+    <SelectValue placeholder="Sélectionner une zone" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="H1">H1</SelectItem>
+    <SelectItem value="H2">H2</SelectItem>
+    <SelectItem value="H3">H3</SelectItem>
+  </SelectContent>
+</Select>
+
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="bareme-cee">Barème CEE</Label>
@@ -308,14 +322,19 @@ export default function RouteComponent() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="zone-pro">Zone</Label>
-                      <Select>
+                      <Select  onValueChange={(value) =>
+      setFormData({
+        ...formData,
+        zone: value, 
+      })
+    }>
                         <SelectTrigger id="zone-pro">
                           <SelectValue placeholder="Sélectionner une zone" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="zone1">Zone 1</SelectItem>
-                          <SelectItem value="zone2">Zone 2</SelectItem>
-                          <SelectItem value="zone3">Zone 3</SelectItem>
+                        <SelectItem value="H1">H1</SelectItem>
+    <SelectItem value="H2">H2</SelectItem>
+    <SelectItem value="H3">H3</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -359,7 +378,8 @@ export default function RouteComponent() {
       <SelectValue placeholder="Sélectionner un pays" />
     </SelectTrigger>
     <SelectContent>
-      {pays.map((pay) => (
+    {Array.isArray(countries) &&
+            countries.map((pay: any) => (
         <SelectItem key={pay.alpha2Code} value={pay.alpha2Code}>
           {pay.nom || pay.name}
         </SelectItem>
@@ -377,11 +397,11 @@ export default function RouteComponent() {
   id="country"
   name="country"
   value={selectedCountryE?.alpha2Code || ""}
-  onChange={(e) => handleCountryChange(e, pays, setSelectedCountryE, setFormData, formData)}
+  onChange={(e) => handleCountryChangeE(e, countries, setSelectedCountryE, setFormData, formData)}
 
   className="border border-gray-300 rounded p-2"
 >
-  {pays.map((country, index) => (
+  {countries.map((country: { alpha2Code: any; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; callingCodes: any[]; }, index: Key | null | undefined) => (
     <option
       key={index}
       value={country.alpha2Code || ""}
@@ -453,12 +473,12 @@ export default function RouteComponent() {
       <select
   id="country"
   name="country"
-  value={selectedCountry?.alpha2Code || ""}
-  onChange={(e) => handleCountryChange(e, pays, setSelectedCountry, setFormData, formData)}
+  value={selectedCountryE?.alpha2Code || ""}
+  onChange={(e) => handleCountryChangeE(e, countries, setSelectedCountryE, setFormData, formData)}
 
   className="border border-gray-300 rounded p-2"
 >
-  {pays.map((country, index) => (
+  {countries.map((country: { alpha2Code: any; name: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; callingCodes: any[]; }, index: Key | null | undefined) => (
     <option
       key={index}
       value={country.alpha2Code || ""}

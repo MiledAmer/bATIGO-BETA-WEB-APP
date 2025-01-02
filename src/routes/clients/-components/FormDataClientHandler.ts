@@ -18,6 +18,24 @@ export const handlePhoneNumberChange = (
   });
 };
 
+export const handlePhoneNumberChangeE = (
+  phoneNumber: string,
+  setPhoneNumberE: React.Dispatch<React.SetStateAction<string>>,
+  setFormData: React.Dispatch<React.SetStateAction<any>>,
+  formData: any
+) => {
+  const phoneNumberNumeric = phoneNumber.replace(/\D/g, "");
+  setPhoneNumberE(phoneNumber);
+
+  setFormData({
+    ...formData,
+    company_phone_number: phoneNumberNumeric ? Number(phoneNumberNumeric) : "",
+    company_tel: {
+      ...formData.company_tel,
+      phone_number: phoneNumberNumeric,
+    },
+  });
+};
 export const handleCountryChange = (
   e: React.ChangeEvent<HTMLSelectElement>,
   pays: any[],

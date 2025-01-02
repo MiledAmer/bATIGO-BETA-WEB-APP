@@ -1,7 +1,7 @@
 
 import apiClient from "@/api/apiClient"; 
 
-export const fetchDevis = async (currentPage: number, per_page: number) => {
+export const fetchDevis = async (currentPage: number, per_page: number, search: string) => {
     try {
    
       const response = await apiClient.get(`/devis?page=${currentPage}&per_page=${per_page}`);
