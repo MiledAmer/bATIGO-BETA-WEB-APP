@@ -16,39 +16,21 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const DevisIndexLazyImport = createFileRoute('/devis/')()
-const ClientsIndexLazyImport = createFileRoute('/clients/')()
-const dashboardIndexLazyImport = createFileRoute('/(dashboard)/')()
-const ClientsNewLazyImport = createFileRoute('/clients/new')()
+const mainIndexLazyImport = createFileRoute('/(main)/')()
 const authLoginLazyImport = createFileRoute('/(auth)/login')()
+const mainDevisIndexLazyImport = createFileRoute('/(main)/devis/')()
+const mainClientsIndexLazyImport = createFileRoute('/(main)/clients/')()
+const mainClientsNewLazyImport = createFileRoute('/(main)/clients/new')()
 
 // Create/Update Routes
 
-const DevisIndexLazyRoute = DevisIndexLazyImport.update({
-  id: '/devis/',
-  path: '/devis/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/devis/index.lazy').then((d) => d.Route))
-
-const ClientsIndexLazyRoute = ClientsIndexLazyImport.update({
-  id: '/clients/',
-  path: '/clients/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/clients/index.lazy').then((d) => d.Route))
-
-const dashboardIndexLazyRoute = dashboardIndexLazyImport
+const mainIndexLazyRoute = mainIndexLazyImport
   .update({
-    id: '/(dashboard)/',
+    id: '/(main)/',
     path: '/',
     getParentRoute: () => rootRoute,
   } as any)
-  .lazy(() => import('./routes/(dashboard)/index.lazy').then((d) => d.Route))
-
-const ClientsNewLazyRoute = ClientsNewLazyImport.update({
-  id: '/clients/new',
-  path: '/clients/new',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/clients/new.lazy').then((d) => d.Route))
+  .lazy(() => import('./routes/(main)/index.lazy').then((d) => d.Route))
 
 const authLoginLazyRoute = authLoginLazyImport
   .update({
@@ -57,6 +39,30 @@ const authLoginLazyRoute = authLoginLazyImport
     getParentRoute: () => rootRoute,
   } as any)
   .lazy(() => import('./routes/(auth)/login.lazy').then((d) => d.Route))
+
+const mainDevisIndexLazyRoute = mainDevisIndexLazyImport
+  .update({
+    id: '/(main)/devis/',
+    path: '/devis/',
+    getParentRoute: () => rootRoute,
+  } as any)
+  .lazy(() => import('./routes/(main)/devis/index.lazy').then((d) => d.Route))
+
+const mainClientsIndexLazyRoute = mainClientsIndexLazyImport
+  .update({
+    id: '/(main)/clients/',
+    path: '/clients/',
+    getParentRoute: () => rootRoute,
+  } as any)
+  .lazy(() => import('./routes/(main)/clients/index.lazy').then((d) => d.Route))
+
+const mainClientsNewLazyRoute = mainClientsNewLazyImport
+  .update({
+    id: '/(main)/clients/new',
+    path: '/clients/new',
+    getParentRoute: () => rootRoute,
+  } as any)
+  .lazy(() => import('./routes/(main)/clients/new.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
@@ -69,32 +75,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginLazyImport
       parentRoute: typeof rootRoute
     }
-    '/clients/new': {
-      id: '/clients/new'
-      path: '/clients/new'
-      fullPath: '/clients/new'
-      preLoaderRoute: typeof ClientsNewLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/(dashboard)/': {
-      id: '/(dashboard)/'
+    '/(main)/': {
+      id: '/(main)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof dashboardIndexLazyImport
+      preLoaderRoute: typeof mainIndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/clients/': {
-      id: '/clients/'
+    '/(main)/clients/new': {
+      id: '/(main)/clients/new'
+      path: '/clients/new'
+      fullPath: '/clients/new'
+      preLoaderRoute: typeof mainClientsNewLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/(main)/clients/': {
+      id: '/(main)/clients/'
       path: '/clients'
       fullPath: '/clients'
-      preLoaderRoute: typeof ClientsIndexLazyImport
+      preLoaderRoute: typeof mainClientsIndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/devis/': {
-      id: '/devis/'
+    '/(main)/devis/': {
+      id: '/(main)/devis/'
       path: '/devis'
       fullPath: '/devis'
-      preLoaderRoute: typeof DevisIndexLazyImport
+      preLoaderRoute: typeof mainDevisIndexLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -104,58 +110,58 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/login': typeof authLoginLazyRoute
-  '/clients/new': typeof ClientsNewLazyRoute
-  '/': typeof dashboardIndexLazyRoute
-  '/clients': typeof ClientsIndexLazyRoute
-  '/devis': typeof DevisIndexLazyRoute
+  '/': typeof mainIndexLazyRoute
+  '/clients/new': typeof mainClientsNewLazyRoute
+  '/clients': typeof mainClientsIndexLazyRoute
+  '/devis': typeof mainDevisIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/login': typeof authLoginLazyRoute
-  '/clients/new': typeof ClientsNewLazyRoute
-  '/': typeof dashboardIndexLazyRoute
-  '/clients': typeof ClientsIndexLazyRoute
-  '/devis': typeof DevisIndexLazyRoute
+  '/': typeof mainIndexLazyRoute
+  '/clients/new': typeof mainClientsNewLazyRoute
+  '/clients': typeof mainClientsIndexLazyRoute
+  '/devis': typeof mainDevisIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/(auth)/login': typeof authLoginLazyRoute
-  '/clients/new': typeof ClientsNewLazyRoute
-  '/(dashboard)/': typeof dashboardIndexLazyRoute
-  '/clients/': typeof ClientsIndexLazyRoute
-  '/devis/': typeof DevisIndexLazyRoute
+  '/(main)/': typeof mainIndexLazyRoute
+  '/(main)/clients/new': typeof mainClientsNewLazyRoute
+  '/(main)/clients/': typeof mainClientsIndexLazyRoute
+  '/(main)/devis/': typeof mainDevisIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/login' | '/clients/new' | '/' | '/clients' | '/devis'
+  fullPaths: '/login' | '/' | '/clients/new' | '/clients' | '/devis'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/clients/new' | '/' | '/clients' | '/devis'
+  to: '/login' | '/' | '/clients/new' | '/clients' | '/devis'
   id:
     | '__root__'
     | '/(auth)/login'
-    | '/clients/new'
-    | '/(dashboard)/'
-    | '/clients/'
-    | '/devis/'
+    | '/(main)/'
+    | '/(main)/clients/new'
+    | '/(main)/clients/'
+    | '/(main)/devis/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   authLoginLazyRoute: typeof authLoginLazyRoute
-  ClientsNewLazyRoute: typeof ClientsNewLazyRoute
-  dashboardIndexLazyRoute: typeof dashboardIndexLazyRoute
-  ClientsIndexLazyRoute: typeof ClientsIndexLazyRoute
-  DevisIndexLazyRoute: typeof DevisIndexLazyRoute
+  mainIndexLazyRoute: typeof mainIndexLazyRoute
+  mainClientsNewLazyRoute: typeof mainClientsNewLazyRoute
+  mainClientsIndexLazyRoute: typeof mainClientsIndexLazyRoute
+  mainDevisIndexLazyRoute: typeof mainDevisIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   authLoginLazyRoute: authLoginLazyRoute,
-  ClientsNewLazyRoute: ClientsNewLazyRoute,
-  dashboardIndexLazyRoute: dashboardIndexLazyRoute,
-  ClientsIndexLazyRoute: ClientsIndexLazyRoute,
-  DevisIndexLazyRoute: DevisIndexLazyRoute,
+  mainIndexLazyRoute: mainIndexLazyRoute,
+  mainClientsNewLazyRoute: mainClientsNewLazyRoute,
+  mainClientsIndexLazyRoute: mainClientsIndexLazyRoute,
+  mainDevisIndexLazyRoute: mainDevisIndexLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -169,26 +175,26 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/(auth)/login",
-        "/clients/new",
-        "/(dashboard)/",
-        "/clients/",
-        "/devis/"
+        "/(main)/",
+        "/(main)/clients/new",
+        "/(main)/clients/",
+        "/(main)/devis/"
       ]
     },
     "/(auth)/login": {
       "filePath": "(auth)/login.lazy.tsx"
     },
-    "/clients/new": {
-      "filePath": "clients/new.lazy.tsx"
+    "/(main)/": {
+      "filePath": "(main)/index.lazy.tsx"
     },
-    "/(dashboard)/": {
-      "filePath": "(dashboard)/index.lazy.tsx"
+    "/(main)/clients/new": {
+      "filePath": "(main)/clients/new.lazy.tsx"
     },
-    "/clients/": {
-      "filePath": "clients/index.lazy.tsx"
+    "/(main)/clients/": {
+      "filePath": "(main)/clients/index.lazy.tsx"
     },
-    "/devis/": {
-      "filePath": "devis/index.lazy.tsx"
+    "/(main)/devis/": {
+      "filePath": "(main)/devis/index.lazy.tsx"
     }
   }
 }

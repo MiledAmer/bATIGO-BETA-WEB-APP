@@ -1,46 +1,47 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { Euro, ReceiptEuro, ReceiptText, Users } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { createLazyFileRoute } from '@tanstack/react-router'
+import { Euro, ReceiptEuro, ReceiptText, Users } from 'lucide-react'
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
+import { ChartConfig, ChartContainer } from '@/components/ui/chart'
+import MainLayout from '../-layout/mainLayout'
 
-export const Route = createLazyFileRoute("/(dashboard)/")({
+export const Route = createLazyFileRoute('/(main)/')({
   component: RouteComponent,
-});
+})
 
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
+  { month: 'January', desktop: 186, mobile: 80 },
+  { month: 'February', desktop: 305, mobile: 200 },
+  { month: 'March', desktop: 237, mobile: 120 },
+  { month: 'April', desktop: 73, mobile: 190 },
+  { month: 'May', desktop: 209, mobile: 130 },
+  { month: 'June', desktop: 214, mobile: 140 },
+]
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
-    color: "#2563eb",
+    label: 'Desktop',
+    color: '#2563eb',
   },
   mobile: {
-    label: "Mobile",
-    color: "#60a5fa",
+    label: 'Mobile',
+    color: '#60a5fa',
   },
-} satisfies ChartConfig;
+} satisfies ChartConfig
 
 const cardsData = [
   {
-    title: "Total Client",
+    title: 'Total Client',
     value: 65,
     icon: Users,
   },
   {
-    title: "Total Devis",
+    title: 'Total Devis',
     value: 517,
     icon: ReceiptText,
   },
   {
-    title: "Total Facture",
+    title: 'Total Facture',
     value: 65,
     icon: ReceiptEuro,
   },
@@ -49,11 +50,11 @@ const cardsData = [
     value: 65,
     icon: Euro,
   },
-];
+]
 
 export default function RouteComponent() {
   return (
-    <>
+    <MainLayout>
       <div className="grid auto-rows-min gap-4 md:grid-cols-4">
         {cardsData.map((card) => (
           <Card key={card.title}>
@@ -84,6 +85,6 @@ export default function RouteComponent() {
           <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
         </BarChart>
       </ChartContainer>
-    </>
-  );
+    </MainLayout>
+  )
 }

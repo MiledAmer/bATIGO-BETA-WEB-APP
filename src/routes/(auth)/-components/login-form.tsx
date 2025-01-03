@@ -1,113 +1,84 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import React, { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAxios";
 import apiClient from "@/api/apiClient";
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"form">) {
-  const { setToken, setUser } = useAuth(); 
-  const [email_u, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+import { toast } from "sonner";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const formSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters." }),
+});
+
+export function LoginForm() {
+  const { setToken, setUser } = useAuth();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    const { password, email } = values;
     try {
-      const response = await apiClient.post("/login", { email_u, password });
-
-      setToken(response.data.data.token); 
-      setUser(response.data.data.user); 
+      const response = await apiClient.post("/login", { email_u: email, password });
+      if (response.status == 200) {
+        setToken(response.data.data.token);
+        setUser(response.data.data.user);
+        toast.success("Login successful");
+      } else {
+        toast.error("Login failed");
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
+      // setError(err.response?.data?.message || "Login failed");
+      console.log(err);
     }
   };
   return (
-    <form className={cn("flex flex-col gap-6", className)} onSubmit={handleSubmit} {...props}>
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Login to your account</h1>
-        <p className="text-balance text-sm text-muted-foreground">
-          Enter your email below to login to your account
-        </p>
-      </div>
-      <div className="grid gap-6">
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email"   value={email_u}
-        onChange={(e) => setEmail(e.target.value)} placeholder="m@example.com" required />
-        </div>
-        <div className="grid gap-2">
-          <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
-            <a
-              href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              Forgot your password?
-            </a>
-          </div>
-          <Input id="password"     value={password}
-        onChange={(e) => setPassword(e.target.value)} type="password" required />
-        </div>
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
-      </div>
-      <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
-        <a href="#" className="underline underline-offset-4">
-          Sign up
-        </a>
-      </div>
-    </form>
-  )
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>email</FormLabel>
+              <FormControl>
+                <Input placeholder="Nassim" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="******" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
+  );
 }
-// import React, { useState } from "react";
-// import { useAuth } from "@/hooks/useAxios";
-// import apiClient from "@/api/apiClient";
-// export const LoginForm: React.FC = () => {
-//   const { setToken, setUser } = useAuth(); 
-//   const [email_u, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [error, setError] = useState("");
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     try {
-//       const response = await apiClient.post("/login", { email_u, password });
-
-//       setToken(response.data.data.token); 
-//       setUser(response.data.data.user); 
-//     } catch (err: any) {
-//       setError(err.response?.data?.message || "Login failed");
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-//       {error && <p className="text-red-500">{error}</p>}
-//       <input
-//         type="email"
-//         placeholder="Email"
-//         value={email_u}
-//         onChange={(e) => setEmail(e.target.value)}
-//         required
-//         className="p-2 border rounded"
-//       />
-//       <input
-//         type="password"
-//         placeholder="Password"
-//         value={password}
-//         onChange={(e) => setPassword(e.target.value)}
-//         required
-//         className="p-2 border rounded"
-//       />
-//       <button type="submit" className="p-2 bg-blue-500 text-white rounded">
-//         Login
-//       </button>
-//     </form>
-//   );
-// };
