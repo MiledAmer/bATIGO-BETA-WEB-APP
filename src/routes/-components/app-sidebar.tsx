@@ -15,7 +15,14 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { Calendar, Home, ReceiptEuro, ReceiptText, Settings, Users } from "lucide-react";
+import {
+  Calendar,
+  Home,
+  ReceiptEuro,
+  ReceiptText,
+  Settings,
+  Users,
+} from "lucide-react";
 import { NavUser } from "./nav-user";
 
 // This is sample data.
@@ -98,7 +105,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser
+          // @ts-expect-error
+          user={data.user}
+        />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

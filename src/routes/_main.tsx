@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router'
 import { AppSidebar } from './-components/app-sidebar'
 import {
   Breadcrumb,
@@ -20,6 +20,11 @@ export const Route = createFileRoute('/_main')({
 })
 
 function RouteComponent() {
+  const navigate = useNavigate();
+  const user = localStorage.getItem('user') 
+  if (!user) {
+    navigate({ to: '/login' });
+  }
   return (
     <SidebarProvider>
       <AppSidebar />

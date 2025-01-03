@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAxios";
+import { useNavigate } from '@tanstack/react-router';
 import apiClient from "@/api/apiClient";
 import { toast } from "sonner";
 
@@ -23,6 +24,7 @@ const formSchema = z.object({
 });
 
 export function LoginForm() {
+  const navigate = useNavigate();
   const { setToken, setUser } = useAuth();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,6 +41,7 @@ export function LoginForm() {
       if (response.status == 200) {
         setToken(response.data.data.token);
         setUser(response.data.data.user);
+        navigate({ to: "/" });
         toast.success("Login successful");
       } else {
         toast.error("Login failed");
