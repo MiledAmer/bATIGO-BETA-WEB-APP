@@ -1,0 +1,130 @@
+import { createLazyFileRoute } from '@tanstack/react-router'
+import * as React from 'react'
+import { ChevronDown, CirclePlus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { fetchDevis } from '@/api/devisAPI'
+import { useQuery } from '@tanstack/react-query'
+
+export const Route = createLazyFileRoute('/_main/devis/')({
+  component: RouteComponent,
+})
+
+export function RouteComponent() {
+  const [search, setSearch] = React.useState<string>('')
+  const [currentPage, setCurrentPage] = React.useState<number>(1)
+  const per_page = 10
+
+  const {
+    data: devis,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ['devis', currentPage, search],
+    queryFn: () => fetchDevis(currentPage, per_page, search),
+  })
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (error instanceof Error) {
+    return <div>Error: {error.message}</div>
+  }
+
+  console.log(devis)
+
+  return (
+    <div className="w-full">
+      <div className="flex flex-row items-center justify-between">
+        <div className="rounded-lg h-10 w-[82%] border bg-card text-card-foreground shadow flex items-center justify-between px-4 ">
+          <h1>devis</h1>
+        </div>
+
+        <a href="/devis/new">
+          <Button>
+            <CirclePlus />
+            Nouveau devis
+          </Button>
+        </a>
+      </div>
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Filter emails..."
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          className="max-w-sm"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns <ChevronDown />
+            </Button>
+          </DropdownMenuTrigger>
+        </DropdownMenu>
+      </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Invoice</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Method</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {devis && devis.data ? (
+              devis.data.map((row: any) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.devis.numerodevis}</TableCell>
+                  <TableCell>{row.devis?.client?.email}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5}>Aucun client trouvé</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {devis?.current_page * devis?.per_page} of {devis?.total} row(s)
+          selected.
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={devis?.length === 0}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}

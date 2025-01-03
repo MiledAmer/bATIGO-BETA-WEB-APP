@@ -1,4 +1,5 @@
-import { AppSidebar } from "../-components/app-sidebar";
+import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { AppSidebar } from './-components/app-sidebar'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,19 +7,19 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/breadcrumb'
+import { Separator } from '@/components/ui/separator'
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar'
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export const Route = createFileRoute('/_main')({
+  component: RouteComponent,
+})
+
+function RouteComponent() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -40,8 +41,10 @@ export default function MainLayout({
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+        <div className="flex flex-1 flex-col gap-4 p-4">
+          <Outlet />
+        </div>
       </SidebarInset>
     </SidebarProvider>
-  );
+  )
 }

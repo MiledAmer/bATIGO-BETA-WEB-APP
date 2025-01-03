@@ -13,32 +13,36 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as MainImport } from './routes/_main'
 
 // Create Virtual Routes
 
-const mainIndexLazyImport = createFileRoute('/(main)/')()
+const MainIndexLazyImport = createFileRoute('/_main/')()
 const authLoginLazyImport = createFileRoute('/(auth)/login')()
-const mainSousTraitantIndexLazyImport = createFileRoute(
-  '/(main)/sous-traitant/',
+const MainSousTraitantIndexLazyImport = createFileRoute(
+  '/_main/sous-traitant/',
 )()
-const mainRgeIndexLazyImport = createFileRoute('/(main)/rge/')()
-const mainForfaitIndexLazyImport = createFileRoute('/(main)/forfait/')()
-const mainEntiteExterneIndexLazyImport = createFileRoute(
-  '/(main)/entite-externe/',
+const MainRgeIndexLazyImport = createFileRoute('/_main/rge/')()
+const MainForfaitIndexLazyImport = createFileRoute('/_main/forfait/')()
+const MainEntiteExterneIndexLazyImport = createFileRoute(
+  '/_main/entite-externe/',
 )()
-const mainDevisIndexLazyImport = createFileRoute('/(main)/devis/')()
-const mainClientsIndexLazyImport = createFileRoute('/(main)/clients/')()
-const mainClientsNewLazyImport = createFileRoute('/(main)/clients/new')()
+const MainDevisIndexLazyImport = createFileRoute('/_main/devis/')()
+const MainClientsIndexLazyImport = createFileRoute('/_main/clients/')()
+const MainClientsNewLazyImport = createFileRoute('/_main/clients/new')()
 
 // Create/Update Routes
 
-const mainIndexLazyRoute = mainIndexLazyImport
-  .update({
-    id: '/(main)/',
-    path: '/',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() => import('./routes/(main)/index.lazy').then((d) => d.Route))
+const MainRoute = MainImport.update({
+  id: '/_main',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MainIndexLazyRoute = MainIndexLazyImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MainRoute,
+} as any).lazy(() => import('./routes/_main/index.lazy').then((d) => d.Route))
 
 const authLoginLazyRoute = authLoginLazyImport
   .update({
@@ -48,70 +52,75 @@ const authLoginLazyRoute = authLoginLazyImport
   } as any)
   .lazy(() => import('./routes/(auth)/login.lazy').then((d) => d.Route))
 
-const mainSousTraitantIndexLazyRoute = mainSousTraitantIndexLazyImport
-  .update({
-    id: '/(main)/sous-traitant/',
-    path: '/sous-traitant/',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() =>
-    import('./routes/(main)/sous-traitant/index.lazy').then((d) => d.Route),
-  )
+const MainSousTraitantIndexLazyRoute = MainSousTraitantIndexLazyImport.update({
+  id: '/sous-traitant/',
+  path: '/sous-traitant/',
+  getParentRoute: () => MainRoute,
+} as any).lazy(() =>
+  import('./routes/_main/sous-traitant/index.lazy').then((d) => d.Route),
+)
 
-const mainRgeIndexLazyRoute = mainRgeIndexLazyImport
-  .update({
-    id: '/(main)/rge/',
-    path: '/rge/',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() => import('./routes/(main)/rge/index.lazy').then((d) => d.Route))
+const MainRgeIndexLazyRoute = MainRgeIndexLazyImport.update({
+  id: '/rge/',
+  path: '/rge/',
+  getParentRoute: () => MainRoute,
+} as any).lazy(() =>
+  import('./routes/_main/rge/index.lazy').then((d) => d.Route),
+)
 
-const mainForfaitIndexLazyRoute = mainForfaitIndexLazyImport
-  .update({
-    id: '/(main)/forfait/',
-    path: '/forfait/',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() => import('./routes/(main)/forfait/index.lazy').then((d) => d.Route))
+const MainForfaitIndexLazyRoute = MainForfaitIndexLazyImport.update({
+  id: '/forfait/',
+  path: '/forfait/',
+  getParentRoute: () => MainRoute,
+} as any).lazy(() =>
+  import('./routes/_main/forfait/index.lazy').then((d) => d.Route),
+)
 
-const mainEntiteExterneIndexLazyRoute = mainEntiteExterneIndexLazyImport
-  .update({
-    id: '/(main)/entite-externe/',
+const MainEntiteExterneIndexLazyRoute = MainEntiteExterneIndexLazyImport.update(
+  {
+    id: '/entite-externe/',
     path: '/entite-externe/',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() =>
-    import('./routes/(main)/entite-externe/index.lazy').then((d) => d.Route),
-  )
+    getParentRoute: () => MainRoute,
+  } as any,
+).lazy(() =>
+  import('./routes/_main/entite-externe/index.lazy').then((d) => d.Route),
+)
 
-const mainDevisIndexLazyRoute = mainDevisIndexLazyImport
-  .update({
-    id: '/(main)/devis/',
-    path: '/devis/',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() => import('./routes/(main)/devis/index.lazy').then((d) => d.Route))
+const MainDevisIndexLazyRoute = MainDevisIndexLazyImport.update({
+  id: '/devis/',
+  path: '/devis/',
+  getParentRoute: () => MainRoute,
+} as any).lazy(() =>
+  import('./routes/_main/devis/index.lazy').then((d) => d.Route),
+)
 
-const mainClientsIndexLazyRoute = mainClientsIndexLazyImport
-  .update({
-    id: '/(main)/clients/',
-    path: '/clients/',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() => import('./routes/(main)/clients/index.lazy').then((d) => d.Route))
+const MainClientsIndexLazyRoute = MainClientsIndexLazyImport.update({
+  id: '/clients/',
+  path: '/clients/',
+  getParentRoute: () => MainRoute,
+} as any).lazy(() =>
+  import('./routes/_main/clients/index.lazy').then((d) => d.Route),
+)
 
-const mainClientsNewLazyRoute = mainClientsNewLazyImport
-  .update({
-    id: '/(main)/clients/new',
-    path: '/clients/new',
-    getParentRoute: () => rootRoute,
-  } as any)
-  .lazy(() => import('./routes/(main)/clients/new.lazy').then((d) => d.Route))
+const MainClientsNewLazyRoute = MainClientsNewLazyImport.update({
+  id: '/clients/new',
+  path: '/clients/new',
+  getParentRoute: () => MainRoute,
+} as any).lazy(() =>
+  import('./routes/_main/clients/new.lazy').then((d) => d.Route),
+)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_main': {
+      id: '/_main'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof MainImport
+      parentRoute: typeof rootRoute
+    }
     '/(auth)/login': {
       id: '/(auth)/login'
       path: '/login'
@@ -119,107 +128,134 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginLazyImport
       parentRoute: typeof rootRoute
     }
-    '/(main)/': {
-      id: '/(main)/'
+    '/_main/': {
+      id: '/_main/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof mainIndexLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainIndexLazyImport
+      parentRoute: typeof MainImport
     }
-    '/(main)/clients/new': {
-      id: '/(main)/clients/new'
+    '/_main/clients/new': {
+      id: '/_main/clients/new'
       path: '/clients/new'
       fullPath: '/clients/new'
-      preLoaderRoute: typeof mainClientsNewLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainClientsNewLazyImport
+      parentRoute: typeof MainImport
     }
-    '/(main)/clients/': {
-      id: '/(main)/clients/'
+    '/_main/clients/': {
+      id: '/_main/clients/'
       path: '/clients'
       fullPath: '/clients'
-      preLoaderRoute: typeof mainClientsIndexLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainClientsIndexLazyImport
+      parentRoute: typeof MainImport
     }
-    '/(main)/devis/': {
-      id: '/(main)/devis/'
+    '/_main/devis/': {
+      id: '/_main/devis/'
       path: '/devis'
       fullPath: '/devis'
-      preLoaderRoute: typeof mainDevisIndexLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainDevisIndexLazyImport
+      parentRoute: typeof MainImport
     }
-    '/(main)/entite-externe/': {
-      id: '/(main)/entite-externe/'
+    '/_main/entite-externe/': {
+      id: '/_main/entite-externe/'
       path: '/entite-externe'
       fullPath: '/entite-externe'
-      preLoaderRoute: typeof mainEntiteExterneIndexLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainEntiteExterneIndexLazyImport
+      parentRoute: typeof MainImport
     }
-    '/(main)/forfait/': {
-      id: '/(main)/forfait/'
+    '/_main/forfait/': {
+      id: '/_main/forfait/'
       path: '/forfait'
       fullPath: '/forfait'
-      preLoaderRoute: typeof mainForfaitIndexLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainForfaitIndexLazyImport
+      parentRoute: typeof MainImport
     }
-    '/(main)/rge/': {
-      id: '/(main)/rge/'
+    '/_main/rge/': {
+      id: '/_main/rge/'
       path: '/rge'
       fullPath: '/rge'
-      preLoaderRoute: typeof mainRgeIndexLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainRgeIndexLazyImport
+      parentRoute: typeof MainImport
     }
-    '/(main)/sous-traitant/': {
-      id: '/(main)/sous-traitant/'
+    '/_main/sous-traitant/': {
+      id: '/_main/sous-traitant/'
       path: '/sous-traitant'
       fullPath: '/sous-traitant'
-      preLoaderRoute: typeof mainSousTraitantIndexLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MainSousTraitantIndexLazyImport
+      parentRoute: typeof MainImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface MainRouteChildren {
+  MainIndexLazyRoute: typeof MainIndexLazyRoute
+  MainClientsNewLazyRoute: typeof MainClientsNewLazyRoute
+  MainClientsIndexLazyRoute: typeof MainClientsIndexLazyRoute
+  MainDevisIndexLazyRoute: typeof MainDevisIndexLazyRoute
+  MainEntiteExterneIndexLazyRoute: typeof MainEntiteExterneIndexLazyRoute
+  MainForfaitIndexLazyRoute: typeof MainForfaitIndexLazyRoute
+  MainRgeIndexLazyRoute: typeof MainRgeIndexLazyRoute
+  MainSousTraitantIndexLazyRoute: typeof MainSousTraitantIndexLazyRoute
+}
+
+const MainRouteChildren: MainRouteChildren = {
+  MainIndexLazyRoute: MainIndexLazyRoute,
+  MainClientsNewLazyRoute: MainClientsNewLazyRoute,
+  MainClientsIndexLazyRoute: MainClientsIndexLazyRoute,
+  MainDevisIndexLazyRoute: MainDevisIndexLazyRoute,
+  MainEntiteExterneIndexLazyRoute: MainEntiteExterneIndexLazyRoute,
+  MainForfaitIndexLazyRoute: MainForfaitIndexLazyRoute,
+  MainRgeIndexLazyRoute: MainRgeIndexLazyRoute,
+  MainSousTraitantIndexLazyRoute: MainSousTraitantIndexLazyRoute,
+}
+
+const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
+
 export interface FileRoutesByFullPath {
+  '': typeof MainRouteWithChildren
   '/login': typeof authLoginLazyRoute
-  '/': typeof mainIndexLazyRoute
-  '/clients/new': typeof mainClientsNewLazyRoute
-  '/clients': typeof mainClientsIndexLazyRoute
-  '/devis': typeof mainDevisIndexLazyRoute
-  '/entite-externe': typeof mainEntiteExterneIndexLazyRoute
-  '/forfait': typeof mainForfaitIndexLazyRoute
-  '/rge': typeof mainRgeIndexLazyRoute
-  '/sous-traitant': typeof mainSousTraitantIndexLazyRoute
+  '/': typeof MainIndexLazyRoute
+  '/clients/new': typeof MainClientsNewLazyRoute
+  '/clients': typeof MainClientsIndexLazyRoute
+  '/devis': typeof MainDevisIndexLazyRoute
+  '/entite-externe': typeof MainEntiteExterneIndexLazyRoute
+  '/forfait': typeof MainForfaitIndexLazyRoute
+  '/rge': typeof MainRgeIndexLazyRoute
+  '/sous-traitant': typeof MainSousTraitantIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/login': typeof authLoginLazyRoute
-  '/': typeof mainIndexLazyRoute
-  '/clients/new': typeof mainClientsNewLazyRoute
-  '/clients': typeof mainClientsIndexLazyRoute
-  '/devis': typeof mainDevisIndexLazyRoute
-  '/entite-externe': typeof mainEntiteExterneIndexLazyRoute
-  '/forfait': typeof mainForfaitIndexLazyRoute
-  '/rge': typeof mainRgeIndexLazyRoute
-  '/sous-traitant': typeof mainSousTraitantIndexLazyRoute
+  '/': typeof MainIndexLazyRoute
+  '/clients/new': typeof MainClientsNewLazyRoute
+  '/clients': typeof MainClientsIndexLazyRoute
+  '/devis': typeof MainDevisIndexLazyRoute
+  '/entite-externe': typeof MainEntiteExterneIndexLazyRoute
+  '/forfait': typeof MainForfaitIndexLazyRoute
+  '/rge': typeof MainRgeIndexLazyRoute
+  '/sous-traitant': typeof MainSousTraitantIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/_main': typeof MainRouteWithChildren
   '/(auth)/login': typeof authLoginLazyRoute
-  '/(main)/': typeof mainIndexLazyRoute
-  '/(main)/clients/new': typeof mainClientsNewLazyRoute
-  '/(main)/clients/': typeof mainClientsIndexLazyRoute
-  '/(main)/devis/': typeof mainDevisIndexLazyRoute
-  '/(main)/entite-externe/': typeof mainEntiteExterneIndexLazyRoute
-  '/(main)/forfait/': typeof mainForfaitIndexLazyRoute
-  '/(main)/rge/': typeof mainRgeIndexLazyRoute
-  '/(main)/sous-traitant/': typeof mainSousTraitantIndexLazyRoute
+  '/_main/': typeof MainIndexLazyRoute
+  '/_main/clients/new': typeof MainClientsNewLazyRoute
+  '/_main/clients/': typeof MainClientsIndexLazyRoute
+  '/_main/devis/': typeof MainDevisIndexLazyRoute
+  '/_main/entite-externe/': typeof MainEntiteExterneIndexLazyRoute
+  '/_main/forfait/': typeof MainForfaitIndexLazyRoute
+  '/_main/rge/': typeof MainRgeIndexLazyRoute
+  '/_main/sous-traitant/': typeof MainSousTraitantIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | ''
     | '/login'
     | '/'
     | '/clients/new'
@@ -242,40 +278,27 @@ export interface FileRouteTypes {
     | '/sous-traitant'
   id:
     | '__root__'
+    | '/_main'
     | '/(auth)/login'
-    | '/(main)/'
-    | '/(main)/clients/new'
-    | '/(main)/clients/'
-    | '/(main)/devis/'
-    | '/(main)/entite-externe/'
-    | '/(main)/forfait/'
-    | '/(main)/rge/'
-    | '/(main)/sous-traitant/'
+    | '/_main/'
+    | '/_main/clients/new'
+    | '/_main/clients/'
+    | '/_main/devis/'
+    | '/_main/entite-externe/'
+    | '/_main/forfait/'
+    | '/_main/rge/'
+    | '/_main/sous-traitant/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
+  MainRoute: typeof MainRouteWithChildren
   authLoginLazyRoute: typeof authLoginLazyRoute
-  mainIndexLazyRoute: typeof mainIndexLazyRoute
-  mainClientsNewLazyRoute: typeof mainClientsNewLazyRoute
-  mainClientsIndexLazyRoute: typeof mainClientsIndexLazyRoute
-  mainDevisIndexLazyRoute: typeof mainDevisIndexLazyRoute
-  mainEntiteExterneIndexLazyRoute: typeof mainEntiteExterneIndexLazyRoute
-  mainForfaitIndexLazyRoute: typeof mainForfaitIndexLazyRoute
-  mainRgeIndexLazyRoute: typeof mainRgeIndexLazyRoute
-  mainSousTraitantIndexLazyRoute: typeof mainSousTraitantIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  MainRoute: MainRouteWithChildren,
   authLoginLazyRoute: authLoginLazyRoute,
-  mainIndexLazyRoute: mainIndexLazyRoute,
-  mainClientsNewLazyRoute: mainClientsNewLazyRoute,
-  mainClientsIndexLazyRoute: mainClientsIndexLazyRoute,
-  mainDevisIndexLazyRoute: mainDevisIndexLazyRoute,
-  mainEntiteExterneIndexLazyRoute: mainEntiteExterneIndexLazyRoute,
-  mainForfaitIndexLazyRoute: mainForfaitIndexLazyRoute,
-  mainRgeIndexLazyRoute: mainRgeIndexLazyRoute,
-  mainSousTraitantIndexLazyRoute: mainSousTraitantIndexLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -288,43 +311,57 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/(auth)/login",
-        "/(main)/",
-        "/(main)/clients/new",
-        "/(main)/clients/",
-        "/(main)/devis/",
-        "/(main)/entite-externe/",
-        "/(main)/forfait/",
-        "/(main)/rge/",
-        "/(main)/sous-traitant/"
+        "/_main",
+        "/(auth)/login"
+      ]
+    },
+    "/_main": {
+      "filePath": "_main.tsx",
+      "children": [
+        "/_main/",
+        "/_main/clients/new",
+        "/_main/clients/",
+        "/_main/devis/",
+        "/_main/entite-externe/",
+        "/_main/forfait/",
+        "/_main/rge/",
+        "/_main/sous-traitant/"
       ]
     },
     "/(auth)/login": {
       "filePath": "(auth)/login.lazy.tsx"
     },
-    "/(main)/": {
-      "filePath": "(main)/index.lazy.tsx"
+    "/_main/": {
+      "filePath": "_main/index.lazy.tsx",
+      "parent": "/_main"
     },
-    "/(main)/clients/new": {
-      "filePath": "(main)/clients/new.lazy.tsx"
+    "/_main/clients/new": {
+      "filePath": "_main/clients/new.lazy.tsx",
+      "parent": "/_main"
     },
-    "/(main)/clients/": {
-      "filePath": "(main)/clients/index.lazy.tsx"
+    "/_main/clients/": {
+      "filePath": "_main/clients/index.lazy.tsx",
+      "parent": "/_main"
     },
-    "/(main)/devis/": {
-      "filePath": "(main)/devis/index.lazy.tsx"
+    "/_main/devis/": {
+      "filePath": "_main/devis/index.lazy.tsx",
+      "parent": "/_main"
     },
-    "/(main)/entite-externe/": {
-      "filePath": "(main)/entite-externe/index.lazy.tsx"
+    "/_main/entite-externe/": {
+      "filePath": "_main/entite-externe/index.lazy.tsx",
+      "parent": "/_main"
     },
-    "/(main)/forfait/": {
-      "filePath": "(main)/forfait/index.lazy.tsx"
+    "/_main/forfait/": {
+      "filePath": "_main/forfait/index.lazy.tsx",
+      "parent": "/_main"
     },
-    "/(main)/rge/": {
-      "filePath": "(main)/rge/index.lazy.tsx"
+    "/_main/rge/": {
+      "filePath": "_main/rge/index.lazy.tsx",
+      "parent": "/_main"
     },
-    "/(main)/sous-traitant/": {
-      "filePath": "(main)/sous-traitant/index.lazy.tsx"
+    "/_main/sous-traitant/": {
+      "filePath": "_main/sous-traitant/index.lazy.tsx",
+      "parent": "/_main"
     }
   }
 }
