@@ -1,12 +1,12 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import * as React from "react";
-import { ChevronDown, CirclePlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { createLazyFileRoute } from '@tanstack/react-router'
+import * as React from 'react'
+import { ChevronDown, CirclePlus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -14,53 +14,53 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { fetchDevis } from "@/api/devisAPI";
-import { useQuery } from "@tanstack/react-query";
-import MainLayout from "@/routes/-layout/mainLayout";
-
-export const Route = createLazyFileRoute("/(main)/devis/")({
+} from '@/components/ui/table'
+import { fetchforfait } from '@/api/forfaitAPI'
+import { useQuery } from '@tanstack/react-query'
+import MainLayout from '@/routes/-layout/mainLayout'
+import { DialogDemo } from './-components/addforfait'
+import { useState } from 'react'
+export const Route = createLazyFileRoute('/(main)/forfait/')({
   component: RouteComponent,
-});
+})
 
 export function RouteComponent() {
-  const [search, setSearch] = React.useState<string>("");
-  const [currentPage, setCurrentPage] = React.useState<number>(1);
-  const per_page = 10;
-
+  const [search, setSearch] = React.useState<string>('')
+  const [currentPage, setCurrentPage] = React.useState<number>(1)
+  const per_page = 10
+  const [isOpen, setIsOpen] = useState(false)
   const {
-    data: devis,
+    data: forfait,
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["devis", currentPage, search],
-    queryFn: () => fetchDevis(currentPage, per_page, search),
-  });
+    queryKey: ['forfait', currentPage, search],
+    queryFn: () => fetchforfait(currentPage, per_page, search),
+  })
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   if (error instanceof Error) {
-    return <div>Error: {error.message}</div>;
+    return <div>Error: {error.message}</div>
   }
-
-  console.log(devis);
 
   return (
     <MainLayout>
       <div className="w-full">
         <div className="flex flex-row items-center justify-between">
           <div className="rounded-lg h-10 w-[82%] border bg-card text-card-foreground shadow flex items-center justify-between px-4 ">
-            <h1>devis</h1>
+            <h1>Sous-traitant</h1>
           </div>
 
-          <a href="/devis/new">
-            <Button>
+          <div>
+            <Button onClick={() => setIsOpen(true)}>
               <CirclePlus />
-              Nouveau devis
+              Nouveau forfait
             </Button>
-          </a>
+            <DialogDemo isOpen={isOpen} setIsOpen={setIsOpen} />
+          </div>
         </div>
         <div className="flex items-center py-4">
           <Input
@@ -81,18 +81,19 @@ export function RouteComponent() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Invoice</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
+                <TableHead>lib</TableHead>
+                <TableHead>ref</TableHead>
+                <TableHead>type_unite</TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {devis && devis.data ? (
-                devis.data.map((row: any) => (
+              {forfait && forfait.data ? (
+                forfait.data.map((row: any) => (
                   <TableRow key={row.id}>
-                    <TableCell>{row.devis.numerodevis}</TableCell>
-                    <TableCell>{row.devis?.client?.email}</TableCell>
+                    <TableCell>{row.lib}</TableCell>
+                    <TableCell>{row.ref}</TableCell>
+                    <TableCell>{row.type_unite}</TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -105,8 +106,8 @@ export function RouteComponent() {
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            {devis?.current_page * devis?.per_page} of {devis?.total} row(s)
-            selected.
+            {forfait?.current_page * forfait?.per_page} of{' '}
+            {forfait?.total} row(s) selected.
           </div>
           <div className="space-x-2">
             <Button
@@ -121,7 +122,7 @@ export function RouteComponent() {
               variant="outline"
               size="sm"
               onClick={() => setCurrentPage((prev) => prev + 1)}
-              disabled={devis?.length === 0}
+              disabled={forfait?.length === 0}
             >
               Next
             </Button>
@@ -129,5 +130,5 @@ export function RouteComponent() {
         </div>
       </div>
     </MainLayout>
-  );
+  )
 }
